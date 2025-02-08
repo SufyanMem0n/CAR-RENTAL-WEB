@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Layout from "../components/layout";
 import { client } from "@/sanity/lib/client";
@@ -18,11 +18,20 @@ interface Car {
     };
 }
 
+export const dynamic = "force-dynamic"; // Ensure dynamic rendering for this page
+
 const PaymentPage = () => {
+    return (
+        <Suspense fallback={<Loading />}>
+            <PaymentContent />
+        </Suspense>
+    );
+};
+
+const PaymentContent = () => {
     const searchParams = useSearchParams();
     const slug = searchParams.get("car");
 
-    // Use typed state
     const [car, setCar] = useState<Car | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -45,14 +54,15 @@ const PaymentPage = () => {
         }
     }, [slug]);
 
-    if (loading) return <p className="text-center text-gray-500">Loading...</p>;
-    if (!car) return <p className="text-center text-red-500">Car not found.</p>;
+    if (loading) return <Loading />;
+    if (!car) return <ErrorMessage message="Car not found." />;
 
     return (
         <Layout>
             <div className="bg-gray-50 min-h-screen p-8">
                 <div className="max-w-5xl mx-auto grid grid-cols-3 gap-6">
                     <div className="col-span-2 space-y-6">
+                        {/* Billing Info Section */}
                         <section className="bg-white p-6 rounded-lg shadow">
                             <h2 className="text-lg font-semibold text-gray-800 mb-4">Billing Info</h2>
                             <p className="text-gray-500 text-sm mb-6">Please enter your billing info</p>
@@ -64,6 +74,7 @@ const PaymentPage = () => {
                             </div>
                         </section>
 
+                        {/* Rental Summary Section */}
                         <section className="bg-white p-6 rounded-lg shadow">
                             <h2 className="text-lg font-semibold text-gray-800 mb-4">Rental Summary</h2>
                             <div className="flex items-center mb-4">
@@ -109,5 +120,15 @@ const PaymentPage = () => {
         </Layout>
     );
 };
+
+// Loading Component
+const Loading = () => (
+    <p className="text-center text-gray-500">Loading...</p>
+);
+
+// Error Message Component
+const ErrorMessage = ({ message }: { message: string }) => (
+    <p className="text-center text-red-500">{message}</p>
+);
 
 export default PaymentPage;
