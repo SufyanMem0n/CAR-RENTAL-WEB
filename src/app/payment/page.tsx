@@ -6,23 +6,40 @@ import Layout from "../components/layout";
 import { client } from "@/sanity/lib/client";
 import { groq } from "next-sanity";
 
+// Define the type for the car object
+interface Car {
+    name: string;
+    brand: string;
+    pricePerDay: number;
+    image?: {
+        asset: {
+            url: string;
+        };
+    };
+}
+
 const PaymentPage = () => {
     const searchParams = useSearchParams();
-    const slug = searchParams.get('car');
-    const [car, setCar] = useState(null);
+    const slug = searchParams.get("car");
+
+    // Use typed state
+    const [car, setCar] = useState<Car | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (slug) {
-            client.fetch(
-                groq`*[_type == "car" && slug.current == $slug][0]{
-                    name, brand, pricePerDay, image{asset->{url}}
-                }`,
-                { slug }
-            ).then((data) => {
-                setCar(data);
-                setLoading(false);
-            }).catch(() => setLoading(false));
+            client
+                .fetch<Car>(
+                    groq`*[_type == "car" && slug.current == $slug][0]{
+                        name, brand, pricePerDay, image{asset->{url}}
+                    }`,
+                    { slug }
+                )
+                .then((data) => {
+                    setCar(data);
+                    setLoading(false);
+                })
+                .catch(() => setLoading(false));
         } else {
             setLoading(false);
         }
@@ -50,7 +67,13 @@ const PaymentPage = () => {
                         <section className="bg-white p-6 rounded-lg shadow">
                             <h2 className="text-lg font-semibold text-gray-800 mb-4">Rental Summary</h2>
                             <div className="flex items-center mb-4">
-                                {car.image && <img src={car.image.asset.url} alt={car.name} className="h-16 w-24 object-cover rounded mr-4" />}
+                                {car.image?.asset.url && (
+                                    <img
+                                        src={car.image.asset.url}
+                                        alt={car.name}
+                                        className="h-16 w-24 object-cover rounded mr-4"
+                                    />
+                                )}
                                 <div>
                                     <h3 className="font-semibold">{car.name}</h3>
                                 </div>

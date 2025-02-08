@@ -8,8 +8,8 @@ interface CarCardProps {
   price: number;
   image?: {
     asset: {
-      _ref?: string; // Make it optional
-      url?: string;  // Add url for direct access
+      _ref?: string;
+      url?: string;
     };
   };
   specs: {
@@ -29,8 +29,9 @@ const CarCard: React.FC<CarCardProps> = ({
   specs,
   isFavorite,
 }) => {
-  // Get image URL safely
-  const imageUrl = image?.asset?.url || urlFor(image)?.url() || "/default-car.jpg"; // Fallback image
+  // Safely handle image URL with a fallback
+  const imageUrl =
+    image?.asset?.url || (image?.asset ? urlFor(image.asset).url() : "/default-car.jpg");
 
   return (
     <div className="border rounded-lg p-4 shadow-md bg-white">

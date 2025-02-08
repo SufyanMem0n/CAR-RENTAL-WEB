@@ -2,6 +2,8 @@ import { client } from './client';
 import { groq } from 'next-sanity';
 
 export interface Car {
+  slug: any;
+  Slug: any;
   _id: string;
   name: string;
   category: string;

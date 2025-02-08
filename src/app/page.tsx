@@ -7,7 +7,8 @@ import CarCard from './components/cart';
 import Navbar from './components/navbar';
 import Footer from './components/footer';
 import Link from 'next/link';
-
+import { Slug } from 'sanity';
+import { carQuery } from '@/sanity/lib/queries';
 export default function Home() {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +51,7 @@ export default function Home() {
           
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {popularCars.map((car) => (
-            <Link key={car._id} href={`/products/${car.slug.current}`} passHref>
+            <Link key={car._id} href={`/products/${car.Slug.current}`} passHref>
               <CarCard
                 _id={car._id}
                 name={car.name}
@@ -73,7 +74,7 @@ export default function Home() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           {recommendedCars.map((car) => (
-            <Link key={car._id} href={`/products/${car.slug.current}`} passHref>
+            <Link key={car._id} href={`/car/${car.slug.current}`} passHref>
               <CarCard
                 _id={car._id}
                 name={car.name}
